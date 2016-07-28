@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LoadingLibraryDemo</string>
+    <string name="error_fatal">不能启动应用</string>
+    <string name="initializing_splash_library">初始化闪屏库&#8230;</string>
+</resources>
