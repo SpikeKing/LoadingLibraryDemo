@@ -34,8 +34,12 @@ import rx.schedulers.Schedulers;
 public class SplashActivity extends AppCompatActivity {
 
     @Inject Lazy<SplashLibrary> splashLibraryLazy; // 延迟闪屏库
-    @Inject @Named(SplashModule.OBSERVABLE_SPLASH_LIBRARY) Observable<SplashLibrary> splashLibraryObservable; // 闪屏库观察者
-    @Inject @Named(SplashModule.SPLASH_ACTIVITY) AtomicBoolean initialized; // 闪屏模块初始化
+
+    @Inject @Named(SplashModule.OBSERVABLE_SPLASH_LIBRARY)
+    Observable<SplashLibrary> splashLibraryObservable; // 闪屏库观察者
+
+    @Inject @Named(SplashModule.SPLASH_ACTIVITY)
+    AtomicBoolean initialized; // 闪屏模块初始化
 
     private Subscription mSplashSubscription; // 闪屏订阅者
 

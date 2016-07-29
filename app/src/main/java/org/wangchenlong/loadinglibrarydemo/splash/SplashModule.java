@@ -45,7 +45,7 @@ public class SplashModule {
     }
 
     @NonNull @Provides @SplashScope @Named(OBSERVABLE_SPLASH_LIBRARY_FROM_CALLABLE)
-    public Observable<SplashLibrary> splashLibraryObservableFromCallbable(
+    public Observable<SplashLibrary> splashLibraryObservableFromCallable(
             final Lazy<SplashLibrary> splashLazy) {
         return Observable.fromCallable(splashLazy::get);
     }
