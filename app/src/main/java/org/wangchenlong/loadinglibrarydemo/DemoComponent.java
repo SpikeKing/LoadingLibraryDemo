@@ -14,5 +14,4 @@ import dagger.Component;
 @Singleton
 @Component(modules = {DemoModule.class})
 public interface DemoComponent {
-    Random random(); // 随机
 }

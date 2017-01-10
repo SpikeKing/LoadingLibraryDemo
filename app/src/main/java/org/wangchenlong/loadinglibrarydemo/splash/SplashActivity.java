@@ -11,7 +11,6 @@ import android.widget.Toast;
 import org.wangchenlong.loadinglibrarydemo.DemoApp;
 import org.wangchenlong.loadinglibrarydemo.R;
 import org.wangchenlong.loadinglibrarydemo.main.MainActivity;
-import org.wangchenlong.loadinglibrarydemo.main.MainLibrary;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,12 +35,12 @@ public class SplashActivity extends AppCompatActivity {
     @Inject Lazy<SplashLibrary> splashLibraryLazy; // 延迟闪屏库
 
     @Inject @Named(SplashModule.OBSERVABLE_SPLASH_LIBRARY)
-    Observable<SplashLibrary> splashLibraryObservable; // 闪屏库观察者
+    Observable<SplashLibrary> mObservable; // 闪屏库观察者
 
     @Inject @Named(SplashModule.SPLASH_ACTIVITY)
     AtomicBoolean initialized; // 闪屏模块初始化
 
-    private Subscription mSplashSubscription; // 闪屏订阅者
+    private Subscription mSubscription; // 闪屏订阅者
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +52,7 @@ public class SplashActivity extends AppCompatActivity {
 
         // 检测依赖注入释是否成功
         Preconditions.checkNotNull(splashLibraryLazy);
-        Preconditions.checkNotNull(splashLibraryObservable);
+        Preconditions.checkNotNull(mObservable);
         Preconditions.checkNotNull(initialized);
     }
 
@@ -64,11 +63,13 @@ public class SplashActivity extends AppCompatActivity {
         if (initialized.get()) {
             openMainAndFinish(this, splashLibraryLazy.get());
         } else {
-            // 加载数据
-            mSplashSubscription = splashLibraryObservable
+
+            // 延迟加载数据
+            mSubscription = mObservable
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::onSuccess, this::onFailure);
+                    .subscribe(this::onSuccess, this::onError);
+
         }
     }
 
@@ -79,7 +80,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     // 加载失败
-    private void onFailure(Throwable e) {
+    private void onError(Throwable e) {
         Toast.makeText(SplashActivity.this, R.string.error_fatal, Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -88,8 +89,8 @@ public class SplashActivity extends AppCompatActivity {
         super.onStop();
 
         // 取消 注册订阅者
-        if (mSplashSubscription != null && !mSplashSubscription.isUnsubscribed()) {
-            mSplashSubscription.unsubscribe();
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
         }
     }
 
@@ -97,7 +98,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onDestroy();
 
         // 释放资源
-        mSplashSubscription = null;
+        mSubscription = null;
     }
 
     private static void openMainAndFinish(@NonNull Activity activity, @NonNull SplashLibrary splashLibrary) {
